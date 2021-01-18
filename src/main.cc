@@ -48,6 +48,8 @@ int main(int argc, char** argv)
     // --mode
     if (result.count("mode"))
     {
+        std::cout << "mode " << result["mode"].as<int>() << std::endl;
+       
         switch (result["mode"].as<int>())
         {
             case AnalysisConfig::k4LepMET: ana.looperMode = AnalysisConfig::k4LepMET; break;

@@ -11,8 +11,10 @@ void Process_allHad()
     // Set variables used in this category.
     // If histograms are booked with these variables the histograms will be filled automatically.
     // Please follow the convention of <category>_<varname> structure.
-    ana.tx.setBranch<int>("allHad_intVar1", -999);
-    ana.tx.setBranch<float>("allHad_floatVar1", -999);
+    //ana.tx.setBranch<int>("allHad_intVar1", -999);
+    //ana.tx.setBranch<float>("allHad_floatVar1", -999);
+    ana.tx.setBranch<int>  ("allHad_Njets",                 ana.tx.getBranchLazy<vector<int>>("Common_jet_idxs").size());
+    ana.tx.setBranch<int>  ("allHad_Nleps",                 ana.tx.getBranchLazy<vector<int>>("Common_lep_pdgid").size());
 
     // Example of reading from Nano
     // std::vector<LorentzVector> electron_p4s = nt.Electron_p4(); // nt is a global variable that accesses NanoAOD
@@ -22,6 +24,5 @@ void Process_allHad()
 
     LorentzVector LV_allHad_LVVar1 = RooUtil::Calc::getLV(34.5, 1.2, 3.123, 0.105); // RooUtil::Calc::getLV() creates 4 vector
 
-    ana.tx.setBranch<LorentzVector>("allHad_LVVar1", LV_allHad_LVVar1);
-    std::cout << "hello lesya!!"<< std::endl;
+    //ana.tx.setBranch<LorentzVector>("allHad_LVVar1", LV_allHad_LVVar1);
 }
