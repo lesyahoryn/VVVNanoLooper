@@ -13,8 +13,46 @@ void Process_allHad()
     // Please follow the convention of <category>_<varname> structure.
     //ana.tx.setBranch<int>("allHad_intVar1", -999);
     //ana.tx.setBranch<float>("allHad_floatVar1", -999);
-    ana.tx.setBranch<int>  ("allHad_Njets",                 ana.tx.getBranchLazy<vector<int>>("Common_jet_idxs").size());
-    ana.tx.setBranch<int>  ("allHad_Nleps",                 ana.tx.getBranchLazy<vector<int>>("Common_lep_pdgid").size());
+    
+    //event level vars
+    ana.tx.setBranch<float>  ("allHad_MET",  ana.tx.getBranchLazy<LorentzVector>("Common_met_p4").Pt());
+    ana.tx.setBranch<float>  ("allHad_genHT",   ana.tx.getBranchLazy<float>("Common_genHT"));
+    
+    
+    
+    //vector vars
+    vector<float> empty;
+    empty.clear();
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau12",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_pt",     empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_eta",    empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_phi",    empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_Jet_pt",        empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_Jet_eta",       empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_Jet_phi",       empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_gen_vvvdecay_pdgid",       empty);
+    
+    for (int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_fatjet_idxs").size(); i++){
+        LorentzVector tmp = ana.tx.getBranchLazy<vector<LorentzVector>>("Common_jet_p4")[i];
+        
+        ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau12", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau21")[i]);
+        ana.tx.pushbackToBranch<float>  ("allHad_FatJet_pt",    tmp.Pt());
+        ana.tx.pushbackToBranch<float>  ("allHad_FatJet_eta",   tmp.Eta());
+        ana.tx.pushbackToBranch<float>  ("allHad_FatJet_phi",   tmp.Phi());
+        
+    }
+    
+    for (int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_jet_idxs").size(); i++){
+        LorentzVector tmp = ana.tx.getBranchLazy<vector<LorentzVector>>("Common_jet_p4")[i];
+         
+        ana.tx.pushbackToBranch<float>  ("allHad_Jet_pt",  tmp.Pt());
+        ana.tx.pushbackToBranch<float>  ("allHad_Jet_eta", tmp.Eta()); 
+        ana.tx.pushbackToBranch<float>  ("allHad_Jet_phi", tmp.Phi());
+    }
+    
+    for (int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid").size(); i++){
+        ana.tx.pushbackToBranch<float>    ("allHad_gen_vvvdecay_pdgid", abs(ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid")[i]));
+    }
 
     // Example of reading from Nano
     // std::vector<LorentzVector> electron_p4s = nt.Electron_p4(); // nt is a global variable that accesses NanoAOD
