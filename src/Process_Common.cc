@@ -556,7 +556,7 @@ void Process_Common_NanoAOD()
     {
 
         float genHT = 0; // variable to be used to stitch HT-sliced samples
-
+        bool isSignal = false;
         // Loop over generator particles and do stuff
         for (unsigned int igen = 0; igen < nt.GenPart_pdgId().size(); ++igen)
         {
@@ -592,6 +592,9 @@ void Process_Common_NanoAOD()
             {
                 continue;
             }
+            
+            //signal event, we'll do some processing on it later
+            isSignal = true;
 
             ana.tx.pushbackToBranch<int>          ("Common_gen_idx", igen);                                                            // Selected gen-particle idx in NanoAOD
             ana.tx.pushbackToBranch<int>          ("Common_gen_mother_idx", nt.GenPart_genPartIdxMother()[igen]);                      // Selected gen-particle mother idx in NanoAOD
@@ -602,208 +605,210 @@ void Process_Common_NanoAOD()
         }
 
         ana.tx.setBranch<float>("Common_genHT", genHT);
+        ana.tx.setBranch<bool>("Common_isSignal", isSignal);
 
         // Selecting 6 fermions from VVV decays
         // int ngen = 0;
-        vector<int> vvvdecay_candidates; // list of idxs that points to the vvv decays
-        for (unsigned int igen = 0; igen < ana.tx.getBranch<vector<int>>("Common_gen_pdgid").size(); ++igen)
-        {
-            const int& pdgid = ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen];
-            const int& mother_idx = ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[igen];
-            float pt = ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen].pt();
-            if (abs(pdgid) <= 20 and mother_idx >= 0 and pt >= 1e-8) // pt requirement is added because sometimes the incoming parton gets included ....
+        if(isSignal){
+            vector<int> vvvdecay_candidates; // list of idxs that points to the vvv decays
+            for (unsigned int igen = 0; igen < ana.tx.getBranch<vector<int>>("Common_gen_pdgid").size(); ++igen)
             {
-                vvvdecay_candidates.push_back(igen);
+                const int& pdgid = ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen];
+                const int& mother_idx = ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[igen];
+                float pt = ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen].pt();
+                if (abs(pdgid) <= 20 and mother_idx >= 0 and pt >= 1e-8) // pt requirement is added because sometimes the incoming parton gets included ....
+                {
+                    vvvdecay_candidates.push_back(igen);
+                }
             }
-        }
 
-        // If we find that there are 6 particles only, then we accept it as good and no need to try to salvage
-        if (vvvdecay_candidates.size() == 6)
-        {
-        }
-        else if (vvvdecay_candidates.size() == 7) // For WWW this seems to be the common case
-        {
-            vvvdecay_candidates.erase(vvvdecay_candidates.begin());
-        }
-        else
-        {
-            // std::cout << "did not find 6 ngen" << vvvdecay_candidates.size() << " " << ana.looper.getCurrentEventIndex() << std::endl;
-            // for (auto& igen : vvvdecay_candidates)
-            // {
-            //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_idx')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_idx")[igen] <<  std::endl;
-            //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_mother_idx')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[igen] <<  std::endl;
-            //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_pdgid')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen] <<  std::endl;
-            //     std::cout <<  " ana.tx.getBranch<vector<LorentzVector>>('Common_gen_p4s')[igen]: " << ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen] <<  std::endl;
-            // }
-            // std::cout << "=======================" << std::endl;
-            // std::cout << "duplicate mother found!" << std::endl;
-            // std::cout << "=======================" << std::endl;
-            // for (unsigned int igen = 0; igen < nt.GenPart_pdgId().size(); ++igen)
-            // {
-            //     std::cout <<  " igen: " << igen <<  std::endl;
-            //     std::cout <<  " nt.GenPart_pdgId()[igen]: " << nt.GenPart_pdgId()[igen] <<  std::endl;
-            //     std::cout <<  " nt.GenPart_status()[igen]: " << nt.GenPart_status()[igen] <<  std::endl;
-            //     std::cout <<  " nt.GenPart_statusFlags()[igen]: " << nt.GenPart_statusFlags()[igen] <<  std::endl;
-            //     std::cout <<  " nt.GenPart_genPartIdxMother()[igen]: " << nt.GenPart_genPartIdxMother()[igen] <<  std::endl;
-            //     std::cout <<  " nt.GenPart_p4()[igen].pt(): " << nt.GenPart_p4()[igen].pt() <<  std::endl;
-            //     std::cout <<  " nt.GenPart_p4()[igen].eta(): " << nt.GenPart_p4()[igen].eta() <<  std::endl;
-            //     std::cout <<  " nt.GenPart_p4()[igen].phi(): " << nt.GenPart_p4()[igen].phi() <<  std::endl;
-            // }
-            // std::cout << "=======================" << std::endl;
-        }
-
-        int n_light_lepton = 0;
-        for (auto& igen : vvvdecay_candidates)
-        {
-            ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_idx"         , ana.tx.getBranch<vector<int>>          ("Common_gen_idx")[igen]); // Selected gen-particle of vvv decays idx in NanoAOD
-            ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_mother_idx"  , ana.tx.getBranch<vector<int>>          ("Common_gen_mother_idx")[igen]); // Selected gen-particle of vvv decays mother idx in NanoAOD
-            ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_mother_id"   , ana.tx.getBranch<vector<int>>          ("Common_gen_mother_id")[igen]); // Selected gen-particle of vvv decays mother idx in NanoAOD
-            ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_pdgid"       , ana.tx.getBranch<vector<int>>          ("Common_gen_pdgid")[igen]); // Selected gen-particle of vvv decays pdgids
-            ana.tx.pushbackToBranch<LorentzVector>("Common_gen_vvvdecay_p4s"         , ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen]); // Selected gen-particle of vvv decays p4s
-            if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) != 15)
+            // If we find that there are 6 particles only, then we accept it as good and no need to try to salvage
+            if (vvvdecay_candidates.size() == 6)
             {
-                ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid", 0); // no tau
+            }
+            else if (vvvdecay_candidates.size() == 7) // For WWW this seems to be the common case
+            {
+                vvvdecay_candidates.erase(vvvdecay_candidates.begin());
             }
             else
             {
-
-                bool filled = false;
-
-                for (unsigned int jgen = 0; jgen < ana.tx.getBranch<vector<int>>("Common_gen_pdgid").size(); ++jgen)
-                {
-
-                    if (ana.tx.getBranch<vector<int>>("Common_gen_idx")[igen] != ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[jgen])
-                        continue;
-
-                    //jgen has as mother the tau
-                    if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]) == 11 or abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]) == 13) 
-                    {
-                        filled = true;
-                        ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid"  ,ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]);
-                        break;
-                    }
-                }
-                if (not filled)
-                {
-                    if(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen] == 15)
-                    {
-                        ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid", -211);
-                    }
-                    else
-                    {
-                        ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid",  211);
-                    }
-                }
+                // std::cout << "did not find 6 ngen" << vvvdecay_candidates.size() << " " << ana.looper.getCurrentEventIndex() << std::endl;
+                // for (auto& igen : vvvdecay_candidates)
+                // {
+                //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_idx')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_idx")[igen] <<  std::endl;
+                //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_mother_idx')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[igen] <<  std::endl;
+                //     std::cout <<  " ana.tx.getBranch<vector<int>>('Common_gen_pdgid')[igen]: " << ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen] <<  std::endl;
+                //     std::cout <<  " ana.tx.getBranch<vector<LorentzVector>>('Common_gen_p4s')[igen]: " << ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen] <<  std::endl;
+                // }
+                // std::cout << "=======================" << std::endl;
+                // std::cout << "duplicate mother found!" << std::endl;
+                // std::cout << "=======================" << std::endl;
+                // for (unsigned int igen = 0; igen < nt.GenPart_pdgId().size(); ++igen)
+                // {
+                //     std::cout <<  " igen: " << igen <<  std::endl;
+                //     std::cout <<  " nt.GenPart_pdgId()[igen]: " << nt.GenPart_pdgId()[igen] <<  std::endl;
+                //     std::cout <<  " nt.GenPart_status()[igen]: " << nt.GenPart_status()[igen] <<  std::endl;
+                //     std::cout <<  " nt.GenPart_statusFlags()[igen]: " << nt.GenPart_statusFlags()[igen] <<  std::endl;
+                //     std::cout <<  " nt.GenPart_genPartIdxMother()[igen]: " << nt.GenPart_genPartIdxMother()[igen] <<  std::endl;
+                //     std::cout <<  " nt.GenPart_p4()[igen].pt(): " << nt.GenPart_p4()[igen].pt() <<  std::endl;
+                //     std::cout <<  " nt.GenPart_p4()[igen].eta(): " << nt.GenPart_p4()[igen].eta() <<  std::endl;
+                //     std::cout <<  " nt.GenPart_p4()[igen].phi(): " << nt.GenPart_p4()[igen].phi() <<  std::endl;
+                // }
+                // std::cout << "=======================" << std::endl;
             }
 
-            if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) == 11 or abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) == 13)
+            int n_light_lepton = 0;
+            for (auto& igen : vvvdecay_candidates)
             {
-                n_light_lepton++;
+                ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_idx"         , ana.tx.getBranch<vector<int>>          ("Common_gen_idx")[igen]); // Selected gen-particle of vvv decays idx in NanoAOD
+                ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_mother_idx"  , ana.tx.getBranch<vector<int>>          ("Common_gen_mother_idx")[igen]); // Selected gen-particle of vvv decays mother idx in NanoAOD
+                ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_mother_id"   , ana.tx.getBranch<vector<int>>          ("Common_gen_mother_id")[igen]); // Selected gen-particle of vvv decays mother idx in NanoAOD
+                ana.tx.pushbackToBranch<int>          ("Common_gen_vvvdecay_pdgid"       , ana.tx.getBranch<vector<int>>          ("Common_gen_pdgid")[igen]); // Selected gen-particle of vvv decays pdgids
+                ana.tx.pushbackToBranch<LorentzVector>("Common_gen_vvvdecay_p4s"         , ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[igen]); // Selected gen-particle of vvv decays p4s
+                if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) != 15)
+                {
+                    ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid", 0); // no tau
+                }
+                else
+                {
+
+                    bool filled = false;
+
+                    for (unsigned int jgen = 0; jgen < ana.tx.getBranch<vector<int>>("Common_gen_pdgid").size(); ++jgen)
+                    {
+
+                        if (ana.tx.getBranch<vector<int>>("Common_gen_idx")[igen] != ana.tx.getBranch<vector<int>>("Common_gen_mother_idx")[jgen])
+                            continue;
+
+                        //jgen has as mother the tau
+                        if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]) == 11 or abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]) == 13) 
+                        {
+                            filled = true;
+                            ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid"  ,ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[jgen]);
+                            break;
+                        }
+                    }
+                    if (not filled)
+                    {
+                        if(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen] == 15)
+                        {
+                            ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid", -211);
+                        }
+                        else
+                        {
+                            ana.tx.pushbackToBranch<int>("Common_gen_vvvdecay_taudecayid",  211);
+                        }
+                    }
+                }
+
+                if (abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) == 11 or abs(ana.tx.getBranch<vector<int>>("Common_gen_pdgid")[igen]) == 13)
+                {
+                    n_light_lepton++;
+                }
             }
+
+            ana.tx.setBranch<int>("Common_gen_n_light_lep", n_light_lepton);
+
+            int nW = 0;
+            int nZ = 0;
+            int nlepW = 0;
+            int ntaulepW = 0;
+            int ntauhadW = 0;
+            int nlepZ = 0;
+            int ntaulepZ = 0;
+            int ntauhadZ = 0;
+            int nnuZ = 0;
+            int nbZ = 0;
+            int W1 = -1;
+            int W2 = -1;
+            bool isSS = false;
+
+            for (unsigned int igen = 0; igen < ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_idx").size(); ++igen)
+            {
+
+                int decay = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid")[igen];
+                int mother = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[igen];
+                int leptau = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_taudecayid")[igen];
+
+                if (abs(mother) == 24)
+                {
+
+                    ++nW;
+
+                    if (abs(decay) == 11 or abs(decay) == 13)
+                    {
+                        ++nlepW;
+                    }
+                    else if (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13))
+                    {
+                        ++ntaulepW;
+                    }
+                    else if (abs(decay) == 15 and abs(leptau) == 211)
+                    {
+                        ++ntauhadW;
+                    }
+                    if (abs(decay) == 11 or abs(decay) == 13 or (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13)))
+                    {
+                        if (W1 < 0)
+                        {
+                            W1 = igen; // first W
+                        }
+                        else
+                        {
+                            if (mother == ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[W1])
+                            {
+                                isSS = true; // first and this W are SS
+                            }
+                            else if (W2 < 0)
+                            {
+                                W2 = igen; // second W
+                            }
+                            else if (mother == ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[W2])
+                            {
+                                isSS = true; // second and this W are SS
+                            }
+                        }
+                    }
+                }
+
+                if (abs(mother) == 23)
+                {
+                    ++nZ;
+                    if (abs(decay) == 11 or abs(decay) == 13)
+                    {
+                        ++nlepZ;
+                    }
+                    else if (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13))
+                    {
+                        ++ntaulepZ;
+                    }
+                    else if (abs(decay) == 15 and abs(leptau) == 211)
+                    {
+                        ++ntauhadZ;
+                    }
+                    else if (abs(decay) == 12 or abs(decay) == 14 or abs(decay) == 16)
+                    {
+                        ++nnuZ;
+                    }
+                    else if (abs(decay) == 5)
+                    {
+                        ++nbZ;
+                    }
+                }
+            }
+
+            ana.tx.setBranch<int> ("Common_n_W",        nW      );
+            ana.tx.setBranch<int> ("Common_n_lep_W",    nlepW   );
+            ana.tx.setBranch<int> ("Common_n_leptau_W", ntaulepW);
+            ana.tx.setBranch<int> ("Common_n_hadtau_W", ntauhadW);
+            ana.tx.setBranch<int> ("Common_n_Z",        nZ      );
+            ana.tx.setBranch<int> ("Common_n_lep_Z",    nlepZ   );
+            ana.tx.setBranch<int> ("Common_n_leptau_Z", ntaulepZ);
+            ana.tx.setBranch<int> ("Common_n_hadtau_Z", ntauhadZ);
+            ana.tx.setBranch<int> ("Common_n_nu_Z",     nnuZ    );
+            ana.tx.setBranch<int> ("Common_n_b_Z",      nbZ     );
+            ana.tx.setBranch<bool>("Common_haslepWSS",  isSS    );
         }
-
-        ana.tx.setBranch<int>("Common_gen_n_light_lep", n_light_lepton);
-
-        int nW = 0;
-        int nZ = 0;
-        int nlepW = 0;
-        int ntaulepW = 0;
-        int ntauhadW = 0;
-        int nlepZ = 0;
-        int ntaulepZ = 0;
-        int ntauhadZ = 0;
-        int nnuZ = 0;
-        int nbZ = 0;
-        int W1 = -1;
-        int W2 = -1;
-        bool isSS = false;
-
-        for (unsigned int igen = 0; igen < ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_idx").size(); ++igen)
-        {
-
-            int decay = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid")[igen];
-            int mother = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[igen];
-            int leptau = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_taudecayid")[igen];
-
-            if (abs(mother) == 24)
-            {
-
-                ++nW;
-
-                if (abs(decay) == 11 or abs(decay) == 13)
-                {
-                    ++nlepW;
-                }
-                else if (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13))
-                {
-                    ++ntaulepW;
-                }
-                else if (abs(decay) == 15 and abs(leptau) == 211)
-                {
-                    ++ntauhadW;
-                }
-                if (abs(decay) == 11 or abs(decay) == 13 or (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13)))
-                {
-                    if (W1 < 0)
-                    {
-                        W1 = igen; // first W
-                    }
-                    else
-                    {
-                        if (mother == ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[W1])
-                        {
-                            isSS = true; // first and this W are SS
-                        }
-                        else if (W2 < 0)
-                        {
-                            W2 = igen; // second W
-                        }
-                        else if (mother == ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_mother_id")[W2])
-                        {
-                            isSS = true; // second and this W are SS
-                        }
-                    }
-                }
-            }
-
-            if (abs(mother) == 23)
-            {
-                ++nZ;
-                if (abs(decay) == 11 or abs(decay) == 13)
-                {
-                    ++nlepZ;
-                }
-                else if (abs(decay) == 15 and (abs(leptau) == 11 or abs(leptau) == 13))
-                {
-                    ++ntaulepZ;
-                }
-                else if (abs(decay) == 15 and abs(leptau) == 211)
-                {
-                    ++ntauhadZ;
-                }
-                else if (abs(decay) == 12 or abs(decay) == 14 or abs(decay) == 16)
-                {
-                    ++nnuZ;
-                }
-                else if (abs(decay) == 5)
-                {
-                    ++nbZ;
-                }
-            }
-        }
-
-        ana.tx.setBranch<int> ("Common_n_W",        nW      );
-        ana.tx.setBranch<int> ("Common_n_lep_W",    nlepW   );
-        ana.tx.setBranch<int> ("Common_n_leptau_W", ntaulepW);
-        ana.tx.setBranch<int> ("Common_n_hadtau_W", ntauhadW);
-        ana.tx.setBranch<int> ("Common_n_Z",        nZ      );
-        ana.tx.setBranch<int> ("Common_n_lep_Z",    nlepZ   );
-        ana.tx.setBranch<int> ("Common_n_leptau_Z", ntaulepZ);
-        ana.tx.setBranch<int> ("Common_n_hadtau_Z", ntauhadZ);
-        ana.tx.setBranch<int> ("Common_n_nu_Z",     nnuZ    );
-        ana.tx.setBranch<int> ("Common_n_b_Z",      nbZ     );
-        ana.tx.setBranch<bool>("Common_haslepWSS",  isSS    );
-
         // If VH ntuple than process Common_gen_VH_channel
         if (ana.input_file_list_tstring.Contains("VHToNonbb_M125"))
         {

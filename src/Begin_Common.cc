@@ -175,6 +175,7 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<vector<LorentzVector>>("Common_gen_vvvdecay_p4s");          // Selected gen-particle of vvv decays p4s
     ana.tx.createBranch<vector<int>>          ("Common_gen_vvvdecay_taudecayid");   // If gentau - flag the decay of the gentau
 
+    ana.tx.createBranch<bool>                 ("Common_isSignal");
     ana.tx.createBranch<int>                  ("Common_n_W");
     ana.tx.createBranch<int>                  ("Common_n_Z");
     ana.tx.createBranch<int>                  ("Common_n_lep_Z");
