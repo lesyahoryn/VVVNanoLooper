@@ -56,6 +56,10 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<bool>                 ("Common_HLT_DoubleEl");
     ana.tx.createBranch<bool>                 ("Common_HLT_MuEG");
     ana.tx.createBranch<bool>                 ("Common_HLT_DoubleMu");
+    ana.tx.createBranch<bool>                 ("Common_HLT_PFHT1050");
+    ana.tx.createBranch<bool>                 ("Common_HLT_AK8PFJet500");
+    ana.tx.createBranch<bool>                 ("Common_HLT_AK8PFHT800_TrimMass50");
+    ana.tx.createBranch<bool>                 ("Common_HLT_AK8PFJet400_TrimMass30");
 
     ana.tx.createBranch<bool>                 ("Common_pass_duplicate_removal_ee_em_mm"); // Flag to identify whether the event passes duplicate removal
     ana.tx.createBranch<bool>                 ("Common_pass_duplicate_removal_mm_em_ee"); // Flag to identify whether the event passes duplicate removal

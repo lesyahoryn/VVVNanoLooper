@@ -61,6 +61,10 @@ void Process_Common_NanoAOD()
     try { ana.tx.setBranch<bool>("Common_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL"    , nt.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL());    } catch (std::runtime_error) { ana.tx.setBranch<bool>("Common_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL"    , 0); } 
     try { ana.tx.setBranch<bool>("Common_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ"  , nt.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ());  } catch (std::runtime_error) { ana.tx.setBranch<bool>("Common_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ"  , 0); } // Lowest unprescaled
     try { ana.tx.setBranch<bool>("Common_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL"     , nt.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL());     } catch (std::runtime_error) { ana.tx.setBranch<bool>("Common_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL"     , 0); } 
+    try { ana.tx.setBranch<bool>("Common_HLT_PFHT1050"     , nt.HLT_PFHT1050());     } catch (std::runtime_error) { ana.tx.setBranch<bool>("HLT_PFHT1050"     , 0); } 
+    try { ana.tx.setBranch<bool>("Common_HLT_AK8PFJet500"     , nt.HLT_AK8PFJet500());     } catch (std::runtime_error) { ana.tx.setBranch<bool>("HLT_AK8PFJet500"     , 0); } 
+    try { ana.tx.setBranch<bool>("Common_HLT_AK8PFHT800_TrimMass50"     , nt.HLT_AK8PFHT800_TrimMass50());     } catch (std::runtime_error) { ana.tx.setBranch<bool>("HLT_AK8PFHT800_TrimMass50"     , 0); } 
+    try { ana.tx.setBranch<bool>("Common_HLT_AK8PFJet400_TrimMass30"     , nt.HLT_AK8PFJet400_TrimMass30());     } catch (std::runtime_error) { ana.tx.setBranch<bool>("HLT_AK8PFJet400_TrimMass30"     , 0); } 
 
     bool is_pd_ee = ana.looper.getCurrentFileName().Contains("DoubleEG") or ana.looper.getCurrentFileName().Contains("EGamma");
     bool is_pd_em = ana.looper.getCurrentFileName().Contains("MuonEG");

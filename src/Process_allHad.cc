@@ -169,6 +169,7 @@ void Process_allHad()
     //truth level stuff
     
     ana.tx.setBranch<float>  ("allHad_mVVV",  -999);
+    ana.tx.setBranch<int>  ("allHad_nGenLeps",  -999);
     if(ana.tx.getBranch<bool>("Common_isSignal")){
         LorentzVector vvv; 
         for (unsigned int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_gen_idx").size(); i++){
@@ -179,9 +180,15 @@ void Process_allHad()
                 ana.tx.pushbackToBranch<float>    ("allHad_gen_vvv_pt", abs(ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[i].Pt()));
            }   
         }
-
         
+        int nleps = 0;
+        //ana.tx.setBranch<int>  ("allHad_nGenLeptons",  10);
         for (unsigned int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid").size(); i++){
+            //std::cout << (ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid")[i]) << std::endl;
+            if( abs(ana.tx.getBranch<vector<int>>("Common_gen_vvvdecay_pdgid")[i]) == 11 ||  
+                abs(ana.tx.getBranch<vector<int>>("Common_gen_vvvdecay_pdgid")[i]) == 13 || 
+                abs(ana.tx.getBranch<vector<int>>("Common_gen_vvvdecay_pdgid")[i]) == 15   ){ nleps+=1;}
+
             ana.tx.pushbackToBranch<float>    ("allHad_gen_vvvdecay_pdgid", abs(ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_pdgid")[i]));
             ana.tx.pushbackToBranch<float>    ("allHad_gen_vvvdecay_pt", abs(ana.tx.getBranch<vector<LorentzVector>>("Common_gen_vvvdecay_p4s")[i].Pt()));
         }
@@ -191,6 +198,7 @@ void Process_allHad()
         }
         
         ana.tx.setBranch<float>  ("allHad_mVVV",  vvv.M());
+        ana.tx.setBranch<int>  ("allHad_nGenLeps", nleps);
     }
 
     // Semi-complete list of NanoAOD for 102X can be found here: https://cms-nanoaod-integration.web.cern.ch/integration/master-102X/mc102X_doc.html
