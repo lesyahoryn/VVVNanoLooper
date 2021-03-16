@@ -52,6 +52,7 @@ void Begin_allHad()
     ana.tx.createBranch<vector<float>>  ("allHad_gen_vvvdecay_pdgid"); // for now these need to be floats bc addVecHistogram doesn't take ints
     ana.tx.createBranch<vector<float>>  ("allHad_gen_vvvdecay_pt"); 
     ana.tx.createBranch<vector<float>>  ("allHad_gen_vvv_pt"); 
+    ana.tx.createBranch<vector<float>>  ("allHad_gen_vvv_eta"); 
     ana.tx.createBranch<vector<float>>  ("allHad_gen_pdgId");
     
     
@@ -210,6 +211,7 @@ void Begin_allHad()
     hists_allHad.addHistogram("mVVV"               ,  60,   0,    6000, [&]() { return    ana.tx.getBranch<float>  ("allHad_mVVV"); } );
     hists_allHad.addHistogram("mVVV_reco"               ,  60,   0,    5000, [&]() { return    ana.tx.getBranch<float>  ("allHad_mVVV_reco"); } );
     hists_allHad.addHistogram("gen_vvv_pt0"       ,  20,   0,    2000,  [&]() { return      ana.tx.getBranch<vector<float>>  ("allHad_gen_vvv_pt")[0]; } );
+    hists_allHad.addHistogram("gen_vvv_eta0"       ,  20,  0,    3,  [&]() { return      ana.tx.getBranch<vector<float>>  ("allHad_gen_vvv_eta")[0]; } );
     
     hists_allHad.add2DHistogram("mVVV", 60,   0,    3000, "MET", 40,   0,    2000, [&]() { return ana.tx.getBranch<float>  ("allHad_mVVV");}, [&]() { return ana.tx.getBranch<float>  ("allHad_MET"); } );
     hists_allHad.add2DHistogram("HT", 60,   0,    3000, "MET", 40,   0,    2000, [&]() { return ana.tx.getBranch<float>  ("allHad_HT");}, [&]() { return ana.tx.getBranch<float>  ("allHad_MET"); } );
@@ -232,6 +234,11 @@ void Begin_allHad()
     hists_allHad.addHistogram("FatJet_pt_2"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_pt").size() > 2) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_pt")[2] : -999 ; } );
     hists_allHad.addHistogram("FatJet_pt_3"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_pt").size() > 3) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_pt")[3] : -999; } );
     
+    hists_allHad.addHistogram("FatJet_eta_0"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_eta").size() > 0) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_eta")[0] : -999 ; } );
+    hists_allHad.addHistogram("FatJet_eta_1"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_eta").size() > 1) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_eta")[1] : -999 ; } );
+    hists_allHad.addHistogram("FatJet_eta_2"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_eta").size() > 2) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_eta")[2] : -999 ; } );
+    hists_allHad.addHistogram("FatJet_eta_3"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_eta").size() > 3) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_eta")[3] : -999; } );
+    
     hists_allHad.addHistogram("FatJet_M_0"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_M").size() > 0) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_M")[0] : -999 ; } );
     hists_allHad.addHistogram("FatJet_M_1"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_M").size() > 1) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_M")[1] : -999 ; } );
     hists_allHad.addHistogram("FatJet_M_2"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_FatJet_M").size() > 2) ? ana.tx.getBranch<vector<float>>("allHad_FatJet_M")[2] : -999 ; } );
@@ -243,6 +250,13 @@ void Begin_allHad()
     hists_allHad.addHistogram("Jet_pt_3"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_pt").size() > 3) ? ana.tx.getBranch<vector<float>>("allHad_Jet_pt")[3] : -999; } );
     hists_allHad.addHistogram("Jet_pt_4"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_pt").size() > 4) ? ana.tx.getBranch<vector<float>>("allHad_Jet_pt")[4] : -999; } );
     hists_allHad.addHistogram("Jet_pt_5"          ,  40,   0,    2000, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_pt").size() > 5) ? ana.tx.getBranch<vector<float>>("allHad_Jet_pt")[5] : -999; } );
+    
+    hists_allHad.addHistogram("Jet_eta_0"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 0) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[0] : -999 ; } );
+    hists_allHad.addHistogram("Jet_eta_1"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 1) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[1] : -999 ; } );
+    hists_allHad.addHistogram("Jet_eta_2"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 2) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[2] : -999 ; } );
+    hists_allHad.addHistogram("Jet_eta_3"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 3) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[3] : -999; } );
+    hists_allHad.addHistogram("Jet_eta_4"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 4) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[4] : -999; } );
+    hists_allHad.addHistogram("Jet_eta_5"          ,  20,   -3,    3, [&]() { return      (ana.tx.getBranch<vector<float>>("allHad_Jet_eta").size() > 5) ? ana.tx.getBranch<vector<float>>("allHad_Jet_eta")[5] : -999; } );
     
      
     hists_allHad.addVecHistogram("FatJet_loose_tau21"       ,  30,   0,    1,  [&]() { return      ana.tx.getBranch<vector<float>>  ("allHad_FatJet_loose_tau21"); } );
@@ -289,5 +303,4 @@ void Begin_allHad()
     ana.cutflow.bookCutflows(); 
     
     ana.cutflow.bookHistogramsForCutAndBelow(hists_allHad, "allHad");
-    ana.cutflow.bookHistogramsForCut(hists_allHad, "CommonCut");
 }

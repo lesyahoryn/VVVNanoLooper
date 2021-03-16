@@ -430,6 +430,10 @@ samples_VVV4L_2018_EFT = {
                 DirectorySample(location="/hadoop/cms/store/user/phchang/samples/ZZZ_dim8_RunIIAutumn18NanoAOD/NanoAODv7/", dataset="/ZZZ_EFT_Sapta/RunIIAutumn18NanoAODv7-v1/NANOAODSIM") : "EFT_ZZZ_incl",
         }
 
+samples_incl_2018_EFT = {
+                DirectorySample(location="/hadoop/cms/store/user/rembserj/samples/WWW_dim8_20200605_inclusive_RunIIAutumn18NanoAOD/NanoAODv7/", dataset="") : "EFT_WWW_incl",
+}
+    
 
 data_2016 = {
         DBSSample(dataset="/DoubleEG/Run2016B_ver1-Nano25Oct2019_ver1-v1/NANOAOD")    : "data_Run2016Bv1_ee",
@@ -671,3 +675,34 @@ samples_VVV4L_2016_Skimmed = {
                 DirectorySample(location=FourLepNanoSkimDir+"/HZJ_HToWWTo2L2Nu_ZTo2L_M125_13TeV_powheg_pythia8_RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1_NANOAODSIM_{}".format(FourLepNanoSkimVersion)                      , dataset="/HZJ_HToWWTo2L2Nu_ZTo2L_M125_13TeV_powheg_pythia8/RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/NANOAODSIM"                      ) : "ZHtoWW",
                 DirectorySample(location=FourLepNanoSkimDir+"/GluGluZH_HToWWTo2L2Nu_ZTo2L_M125_13TeV_powheg_pythia8_RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1_NANOAODSIM_{}".format(FourLepNanoSkimVersion)                 , dataset="/GluGluZH_HToWWTo2L2Nu_ZTo2L_M125_13TeV_powheg_pythia8/RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/NANOAODSIM"                 ) : "GGZHtoWW",
         }
+
+
+QCD_2017 = {
+        DBSSample(dataset="/QCD_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT100to200",
+        DBSSample(dataset="/QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT200to300",
+        DBSSample(dataset="/QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/NANOAODSIM")       : "QCD_HT300to500",
+        DBSSample(dataset="/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT500to700",
+        DBSSample(dataset="/QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT700to1000",
+        DBSSample(dataset="/QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT1000to1500",
+        DBSSample(dataset="/QCD_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM")       : "QCD_HT1500to2000",
+        DBSSample(dataset="/QCD_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17NanoAOD-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/NANOAODSIM ")       : "QCD_HT2000toInf",
+}
+
+QCD_2018 = {
+        DBSSample(dataset="/QCD_HT100to200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT100to200",
+        DBSSample(dataset="/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT200to300",
+        DBSSample(dataset="/QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT300to500",
+        DBSSample(dataset="/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT500to700",
+        DBSSample(dataset="/QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT700to1000",
+        DBSSample(dataset="/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT1000to1500",
+        DBSSample(dataset="/QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT1500to2000",
+        DBSSample(dataset="/QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT2000toInf",
+}
+
+QCD_test = {
+        DBSSample(dataset="/QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv7-Nano02Apr2020_102X_upgrade2018_realistic_v21-v1/NANOAODSIM")       : "QCD_HT700to1000",
+}
+
+allhad_test = {
+        DirectorySample(location="/hadoop/cms/store/user/rembserj/samples/WWW_dim8_20200605_inclusive_RunIIAutumn18NanoAOD/NanoAODv7", dataset="/EFT_WWW_incl/RunII2018/NANOAODSIM/") : "EFT_WWZ_incl",
+}

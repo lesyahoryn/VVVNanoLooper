@@ -39,6 +39,7 @@ void Process_allHad()
     ana.tx.setBranch<vector<float>>  ("allHad_gen_vvvdecay_pdgid",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_gen_vvvdecay_pt",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_gen_vvv_pt",       empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_gen_vvv_eta",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_gen_pdgId",       empty);
     
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_loose_tau21",  empty);
@@ -178,6 +179,7 @@ void Process_allHad()
                 vvv += tmp;
                 
                 ana.tx.pushbackToBranch<float>    ("allHad_gen_vvv_pt", abs(ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[i].Pt()));
+                ana.tx.pushbackToBranch<float>    ("allHad_gen_vvv_eta", abs(ana.tx.getBranch<vector<LorentzVector>>("Common_gen_p4s")[i].Eta()));
            }   
         }
         
