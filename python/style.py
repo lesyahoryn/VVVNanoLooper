@@ -1,5 +1,52 @@
 #!/bin/env python
 
+
+#~~~~~~~~~~~~~~~~
+# allHad styles
+#~~~~~~~~~~~~~~~~
+
+grouping_allHad = {
+    "QCD_HT100to200.root"             : "QCD",
+    "QCD_HT200to300.root"             : "QCD",
+    "QCD_HT300to500.root"             : "QCD",
+    "QCD_HT500to700.root"             : "QCD",
+    "QCD_HT700to1000.root"            : "QCD",
+    "QCD_HT1000to1500.root"           : "QCD",
+    "QCD_HT1500to2000.root"           : "QCD",
+    "QCD_HT2000toInf.root"            : "QCD",
+    "WJetstoQQ_HT400to600.root"       : "W+jets",
+    "WJetstoQQ_HT600to800.root"       : "W+jets",
+    "WJetstoQQ_HT800toInf.root"       : "W+jets",
+    "ZJetstoQQ_HT400to600.root"       : "Z+jets",
+    "ZJetstoQQ_HT600to800.root"       : "Z+jets",
+    "ZJetstoQQ_HT800toInf.root"       : "Z+jets",
+    "TTJets_HT600to800.root"          : "ttbar",
+    "TTJets_HT800to1200.root"         : "ttbar",
+    "TTJets_HT1200to2500.root"        : "ttbar",
+    "TTJets_HT2500toInf.root"         : "ttbar",
+    "ST_tW_antitop.root"              : "single top",
+    "ST_tW_top.root"                  : "single top",
+    "WW.root"                         : "diboson",
+    "ZZ.root"                         : "diboson",
+    "WZ.root"                         : "diboson",
+    "WplusH_HtoBB_WtoQQ.root"         : "diboson",
+    "WminusH_HtoBB_WtoQQ.root"        : "diboson",
+    "ZH_HtoBB_ZtoQQ.root"             : "diboson",
+    "WWW_SM.root"                     : "WWW SM",
+    "WWW_FT0_1.root"                  : "WWW FT0_1",
+    "WWW_FT0_5.root"                  : "WWW FT0_5",
+    "WWW_FT0_10.root"                 : "WWW FT0_10",
+}
+
+bkg_plot_order_allHad = ["diboson", "ttbar", "single top", "Z+jets", "W+jets", "QCD" ]
+#bkg_plot_order_allHad.reverse() 
+
+legend_labels_allHad = bkg_plot_order_allHad
+sig_plot_order_allHad = [ "WWW SM", "WWW FT0_1", "WWW FT0_5", "WWW FT0_10" ]
+#sig_plot_order_allHad = [ "WWW FT0_5" ]
+sig_labels_allHad = sig_plot_order_allHad
+colors_allHad = [8007, 8006, 8005, 8004, 8003, 8001, ]
+
 #~~~~~~~~~~~~~~~~
 # 4Lep MET styles
 #~~~~~~~~~~~~~~~~
