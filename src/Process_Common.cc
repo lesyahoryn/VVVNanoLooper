@@ -306,6 +306,9 @@ void Process_Common_NanoAOD()
             // For now, accept anything that reaches this point
             ana.tx.pushbackToBranch<int>("Common_jet_idxs", ijet);
             ana.tx.pushbackToBranch<int>("Common_jet_id", nt.Jet_jetId()[ijet]);
+            if ( nt.Jet_p4()[ijet].pt() < 50. ) ana.tx.pushbackToBranch<int>("Common_jet_puid", nt.Jet_puId()[ijet]);
+            else ana.tx.pushbackToBranch<int>("Common_jet_puid", -1);
+
             ana.tx.pushbackToBranch<LorentzVector>("Common_jet_p4", nt.Jet_p4()[ijet]);
             ana.tx.pushbackToBranch<bool>("Common_jet_passBloose" , nt.Jet_btagDeepFlavB()[ijet] > bWPloose );
             ana.tx.pushbackToBranch<bool>("Common_jet_passBmedium", nt.Jet_btagDeepFlavB()[ijet] > bWPmedium);
@@ -361,6 +364,11 @@ void Process_Common_NanoAOD()
             fjWPmedium = 0.704;
             fjWPtight  = 0.806;
         }
+        
+        //deepCSV values for subjet b-tagging just 2018 for now
+        float csvBLoose = 0.1241;
+        float csvBMedium = 0.4184; 
+
 
         // TODO: What is POG recommendation? do we use nt.FatJet_jetId()?
         // Figure this out
@@ -403,6 +411,7 @@ void Process_Common_NanoAOD()
         // For now, accept anything that reaches this point
         ana.tx.pushbackToBranch<int>("Common_fatjet_idxs", ifatjet);
         ana.tx.pushbackToBranch<int>("Common_fatjet_id", nt.FatJet_jetId()[ifatjet]);
+        
         ana.tx.pushbackToBranch<LorentzVector>("Common_fatjet_p4", nt.FatJet_p4()[ifatjet]);
         ana.tx.pushbackToBranch<float>("Common_fatjet_msoftdrop", nt.FatJet_msoftdrop()[ifatjet]);
         ana.tx.pushbackToBranch<float>("Common_fatjet_deepMD_W", nt.FatJet_deepTagMD_WvsQCD()[ifatjet]);
@@ -427,6 +436,19 @@ void Process_Common_NanoAOD()
         ana.tx.pushbackToBranch<float>("Common_fatjet_subjet1_mass", nt.FatJet_subJetIdx2()[ifatjet] >= 0 ? nt.SubJet_mass()[nt.FatJet_subJetIdx2()[ifatjet]] : -999.f);
         ana.tx.pushbackToBranch<LorentzVector>("Common_fatjet_subjet0_p4",  nt.FatJet_subJetIdx1()[ifatjet] >= 0 ? (RooUtil::Calc::getLV(nt.SubJet_pt()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_eta()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_phi()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_mass()[nt.FatJet_subJetIdx1()[ifatjet]])) : (RooUtil::Calc::getLV(0., 0., 0., 0.)));
         ana.tx.pushbackToBranch<LorentzVector>("Common_fatjet_subjet1_p4",  nt.FatJet_subJetIdx2()[ifatjet] >= 0 ? (RooUtil::Calc::getLV(nt.SubJet_pt()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_eta()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_phi()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_mass()[nt.FatJet_subJetIdx2()[ifatjet]])) : (RooUtil::Calc::getLV(0., 0., 0., 0.)));
+        
+        int btag = -999;
+        if (nt.FatJet_subJetIdx1()[ifatjet] >= 0){
+            if (nt.SubJet_btagDeepB()[ nt.FatJet_subJetIdx1()[ifatjet] ] > csvBLoose) btag = 1;
+            if (nt.SubJet_btagDeepB()[ nt.FatJet_subJetIdx1()[ifatjet] ] > csvBMedium) btag = 2;
+        }
+        if (nt.FatJet_subJetIdx2()[ifatjet] >= 0){
+            if (nt.SubJet_btagDeepB()[ nt.FatJet_subJetIdx1()[ifatjet] ] > csvBLoose) btag = 1;
+            if (nt.SubJet_btagDeepB()[ nt.FatJet_subJetIdx1()[ifatjet] ] > csvBMedium) btag = 2;
+        }
+        ana.tx.pushbackToBranch<int>("Common_fatjet_subjet0_btag", btag);
+        ana.tx.pushbackToBranch<int>("Common_fatjet_subjet1_btag", btag);
+         
 
         float WPtemp = 0;
         int WPid = -999;
@@ -869,16 +891,16 @@ void Process_Common_NanoAOD()
     ana.tx.sortVecBranchesByPt(
             /* name of the 4vector branch to use to pt sort by*/               "Common_jet_p4",
             /* names of any associated vector<float> branches to sort along */ {},
-            /* names of any associated vector<int>   branches to sort along */ {"Common_jet_idxs", "Common_jet_overlapfatjet"},
+            /* names of any associated vector<int>   branches to sort along */ {"Common_jet_idxs", "Common_jet_overlapfatjet", "Common_jet_id", "Common_jet_puid"},
             /* names of any associated vector<bool>  branches to sort along */ {"Common_jet_passBloose", "Common_jet_passBmedium", "Common_jet_passBtight"}
             );
 
     // Sorting fatjet branches
     ana.tx.sortVecBranchesByPt(
             /* name of the 4vector branch to use to pt sort by*/               "Common_fatjet_p4",
-            /* names of any associated vector<float> branches to sort along */ {"Common_fatjet_msoftdrop", "Common_fatjet_deepMD_W", "Common_fatjet_deep_W", "Common_fatjet_deepMD_Z", "Common_fatjet_deep_Z", "Common_fatjet_deepMD_T", "Common_fatjet_deep_T", "Common_fatjet_deepMD_bb", "Common_fatjet_tau3", "Common_fatjet_tau2", "Common_fatjet_tau1", "Common_fatjet_tau32", "Common_fatjet_tau21", "Common_fatjet_subjet0_pt", "Common_fatjet_subjet0_eta", "Common_fatjet_subjet0_phi", "Common_fatjet_subjet0_mass", "Common_fatjet_subjet1_pt", "Common_fatjet_subjet1_eta", "Common_fatjet_subjet1_phi", "Common_fatjet_subjet1_mass", "Common_fatjet_SFVLoose", "Common_fatjet_SFLoose", "Common_fatjet_SFMedium", "Common_fatjet_SFTight", "Common_fatjet_SFdnVLoose", "Common_fatjet_SFdnLoose", "Common_fatjet_SFdnMedium", "Common_fatjet_SFdnTight", "Common_fatjet_SFupVLoose", "Common_fatjet_SFupLoose", "Common_fatjet_SFupMedium", "Common_fatjet_SFupTight" /*, "Common_fatjet_subjet0_p4", "Common_fatjet_subjet1_p4",*/
+            /* names of any associated vector<float> branches to sort along */ {"Common_fatjet_msoftdrop", "Common_fatjet_deepMD_W", "Common_fatjet_deep_W", "Common_fatjet_deepMD_Z", "Common_fatjet_deep_Z", "Common_fatjet_deepMD_T", "Common_fatjet_deep_T", "Common_fatjet_deepMD_bb", "Common_fatjet_tau3", "Common_fatjet_tau2", "Common_fatjet_tau1", "Common_fatjet_tau32", "Common_fatjet_tau21", "Common_fatjet_subjet0_pt", "Common_fatjet_subjet0_eta", "Common_fatjet_subjet0_phi", "Common_fatjet_subjet0_mass", "Common_fatjet_subjet1_pt", "Common_fatjet_subjet1_eta", "Common_fatjet_subjet1_phi", "Common_fatjet_subjet1_mass", "Common_fatjet_subjet0_btag", "Common_fatjet_subjet1_btag", "Comon_nsubjet", "Common_fatjet_SFVLoose", "Common_fatjet_SFLoose", "Common_fatjet_SFMedium", "Common_fatjet_SFTight", "Common_fatjet_SFdnVLoose", "Common_fatjet_SFdnLoose", "Common_fatjet_SFdnMedium", "Common_fatjet_SFdnTight", "Common_fatjet_SFupVLoose", "Common_fatjet_SFupLoose", "Common_fatjet_SFupMedium", "Common_fatjet_SFupTight" /*, "Common_fatjet_subjet0_p4", "Common_fatjet_subjet1_p4",*/
                                                                                },
-            /* names of any associated vector<int>   branches to sort along */ {"Common_fatjet_idxs", "Common_fatjet_WP", "Common_fatjet_WP_antimasscut"},
+            /* names of any associated vector<int>   branches to sort along */ {"Common_fatjet_idxs", "Common_fatjet_WP", "Common_fatjet_WP_antimasscut", "Common_fatjet_id"},
             /* names of any associated vector<bool>  branches to sort along */ {}
             );
 

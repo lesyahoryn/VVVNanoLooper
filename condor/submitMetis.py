@@ -66,8 +66,15 @@ if __name__ == "__main__":
             # sample_map = samples.samples_VVV4L_2016 # See condor/samples.py
             sample_map = samples.samples_VVV4L_2016_Skimmed # See condor/samples.py
             sample_map.update(samples.samples_VVV4L_2016_EFT) # See condor/samples.py
-        
 
+    sample_map = samples.QCD_2018
+    sample_map.update(samples.Vplusjets_2018)
+    sample_map.update(samples.top_2018)
+    sample_map.update(samples.diboson_2018)
+    sample_map.update(samples.lowHT_2018)
+    print sample_map
+    
+    
     # submission tag
     tag = args.thetag 
 
@@ -88,6 +95,7 @@ if __name__ == "__main__":
         for ds,shortname in sample_map.items():
             # skip_tail = True
             skip_tail = False
+            
             task = CondorTask(
                     sample = ds,
                     files_per_output = split_func(ds.get_datasetname()),
@@ -100,14 +108,16 @@ if __name__ == "__main__":
                             ["metis_extraargs", "--mode {} {}".format(args.mode,args.addflags)]
                             ]
                         },
-                    cmssw_version = "CMSSW_9_2_0",
-                    scram_arch = "slc6_amd64_gcc700",
+                    cmssw_version = "CMSSW_10_0_0",
+                    scram_arch = "slc7_amd64_gcc700",
                     input_executable = "{}/condor_executable_metis.sh".format(condorpath), # your condor executable here
                     tarfile = "{}/package.tar.xz".format(condorpath), # your tarfile with assorted goodies here
                     special_dir = "VVVAnalysis/{}/{}".format(tag,args.year), # output files into /hadoop/cms/store/<user>/<special_dir>
                     min_completion_fraction = 0.50 if skip_tail else 1.0,
                     # max_jobs = 10,
             )
+            
+            print "now merging"
             # When babymaking task finishes, fire off a task that takes outputs and merges them locally (hadd)
             # into a file that ends up on nfs (specified by `merged_dir` above)
             merge_task = LocalMergeTask(
@@ -129,11 +139,13 @@ if __name__ == "__main__":
             task_summary[task.get_sample().get_datasetname()] = task.get_task_summary()
 
         # Parse the summary and make a summary.txt that will be used to pretty status of the jobs
+        '''
         os.system("rm web_summary.json")
         webdir="~/public_html/VVVNanoLooperDashboard{}".format(args.year)
         StatsParser(data=task_summary, webdir=webdir).do()
         os.system("chmod -R 755 {}".format(webdir))
         os.system("msummary -r -i {}/web_summary.json".format(webdir))
+        '''
 
         # If all done exit the loop
         if all_tasks_complete:

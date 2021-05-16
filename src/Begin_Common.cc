@@ -96,7 +96,8 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<vector<bool>>         ("Common_jet_passBloose");    // Pt sorted selected jet idxs (To access rest of the jet variables in NanoAOD)
     ana.tx.createBranch<vector<bool>>         ("Common_jet_passBmedium");   // Pt sorted selected jet idxs (To access rest of the jet variables in NanoAOD)
     ana.tx.createBranch<vector<bool>>         ("Common_jet_passBtight");    // Pt sorted selected jet idxs (To access rest of the jet variables in NanoAOD)
-    ana.tx.createBranch<vector<int>>          ("Common_jet_id");    // Pt sorted selected jet idxs (To access rest of the jet variables in NanoAOD)
+    ana.tx.createBranch<vector<int>>          ("Common_jet_id");    //  https://twiki.cern.ch/twiki/bin/view/CMS/JetID
+    ana.tx.createBranch<vector<int>>          ("Common_jet_puid");    //only for jets with pT < 50 GeV https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     //ana.tx.createBranch<vector<float>>        ("Common_jet_bSFLoose");      // single jet bSF
     //ana.tx.createBranch<vector<float>>        ("Common_jet_bSFMedium");     // single jet bSF
     //ana.tx.createBranch<vector<float>>        ("Common_jet_bSFTight");      // single jet bSF
@@ -129,10 +130,12 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet0_eta");   // Pt sorted selected fatjet subjet p4 0 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet0_phi");   // Pt sorted selected fatjet subjet p4 0 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet0_mass");  // Pt sorted selected fatjet subjet p4 0 (To access rest of the fatjet variables in NanoAOD)
+    ana.tx.createBranch<vector<int>>        ("Common_fatjet_subjet0_btag");  // Pt sorted selected fatjet subjet p4 0 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet1_pt");    // Pt sorted selected fatjet subjet p4 1 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet1_eta");   // Pt sorted selected fatjet subjet p4 2 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet1_phi");   // Pt sorted selected fatjet subjet p4 3 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<float>>        ("Common_fatjet_subjet1_mass");  // Pt sorted selected fatjet subjet p4 4 (To access rest of the fatjet variables in NanoAOD)
+    ana.tx.createBranch<vector<int>>        ("Common_fatjet_subjet1_btag");  // Pt sorted selected fatjet subjet p4 0 (To access rest of the fatjet variables in NanoAOD)
     ana.tx.createBranch<vector<LorentzVector>>("Common_fatjet_subjet0_p4");    // Pt sorted selected fatjet p4s
     ana.tx.createBranch<vector<LorentzVector>>("Common_fatjet_subjet1_p4");    // Pt sorted selected fatjet p4s
     ana.tx.createBranch<vector<int>>          ("Common_fatjet_WP");            // WP: 0: VLoose (5%), 1: Loose (2.5%), 2: Medium (1%), 3: Tight (0.5%)

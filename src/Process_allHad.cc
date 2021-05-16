@@ -24,9 +24,24 @@ void Process_allHad()
     vector<int> empty_i;
     empty.clear();
     empty_i.clear();
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau1",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau2",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau3",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau21",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tau32",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_msoftdrop",  empty);
+
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet0_pt",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet0_eta",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet0_phi",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet0_mass",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet0_btag",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet1_pt",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet1_eta",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet1_phi",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet1_mass",  empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_subjet1_btag",  empty);
+    
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_pt",     empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_M",     empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_eta",    empty);
@@ -36,6 +51,7 @@ void Process_allHad()
     ana.tx.setBranch<vector<float>>  ("allHad_Jet_eta",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_Jet_phi",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_Jet_ID",       empty);
+    ana.tx.setBranch<vector<float>>  ("allHad_Jet_puid",       empty);
     
     ana.tx.setBranch<vector<int>>    ("allHad_FatJet_WP",     empty_i);
     ana.tx.setBranch<vector<float>>  ("allHad_gen_vvvdecay_pdgid",       empty);
@@ -44,64 +60,44 @@ void Process_allHad()
     ana.tx.setBranch<vector<float>>  ("allHad_gen_vvv_eta",       empty);
     ana.tx.setBranch<vector<float>>  ("allHad_gen_pdgId",       empty);
     
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_tau21",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_tau32",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_msoftdrop",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_Wtag",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_Ztag",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_Ttag",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_Zbbtag",  empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_pt",     empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_M",     empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_eta",    empty);
-    ana.tx.setBranch<vector<float>>  ("allHad_FatJet_tight_phi",    empty);
-    
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_Zbbtag",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_Ztag",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_Ttag",  empty);
     ana.tx.setBranch<vector<float>>  ("allHad_FatJet_Wtag",  empty);
 
     vector<LorentzVector> selected_p4;
-    vector<LorentzVector> selected_p4_tight;
 
-
+    float HT_fj = 0;
+    float ST_fj = 0;
+    LorentzVector vvv_reco_fj; 
+        
     
-    int n_loose = 0;
-    int n_medium = 0;
-    int n_tight = 0;
+    int n_loose_subjet = 0;
+    int n_medium_subjet = 0;
 
+    bool first_jet = true;
     for (unsigned int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_fatjet_idxs").size(); i++){
         LorentzVector tmp = ana.tx.getBranchLazy<vector<LorentzVector>>("Common_fatjet_p4")[i];
         int fjid = ana.tx.getBranchLazy<vector<int>>("Common_fatjet_WP")[i];
-        if (fjid == -999 || tmp.Pt() < 200 || abs(tmp.Eta()) > 2.4) continue;
+        if (tmp.Pt() < 200 || abs(tmp.Eta()) > 2.4) continue;
         if (ana.tx.getBranchLazy<vector<int>>("Common_fatjet_id")[i] != 6) continue;
         
-
-        //std::cout << fjid << std::endl;  
-        
-        if(fjid >= 3){
-            n_tight ++;
-            selected_p4_tight.push_back(tmp);
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_tau21", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau21")[i]);
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_tau32", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau32")[i]);
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_msoftdrop", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_msoftdrop")[i]);
-            ana.tx.pushbackToBranch<float>    ("allHad_FatJet_tight_Wtag",    ana.tx.getBranchLazy<vector<float>>("Common_fatjet_deepMD_W")[i]);
-            ana.tx.pushbackToBranch<float>    ("allHad_FatJet_tight_Ztag",    ana.tx.getBranchLazy<vector<float>>("Common_fatjet_deepMD_Z")[i]);
-            ana.tx.pushbackToBranch<float>    ("allHad_FatJet_tight_Ttag",    ana.tx.getBranchLazy<vector<float>>("Common_fatjet_deepMD_T")[i]);
-            ana.tx.pushbackToBranch<float>    ("allHad_FatJet_tight_Zbbtag",    ana.tx.getBranchLazy<vector<float>>("Common_fatjet_deepMD_bb")[i]);
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_pt",    tmp.Pt());
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_M",    tmp.M());
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_eta",   tmp.Eta());
-            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tight_phi",   tmp.Phi());
-
-
-        }
-        
-        
+             
+         
         //only select medium fatjets 
         if(fjid >= 2) {
+            //fatjet pt 0 > 500 GeV for trigger turn on
+            if(first_jet){
+                 first_jet = false;
+                 if(tmp.Pt() < 500) continue;
+            }
             selected_p4.push_back(tmp);
+            HT_fj += tmp.Pt();
+            vvv_reco_fj += tmp;
 
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau1", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau1")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau2", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau2")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau3", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau3")[i]);
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau21", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau21")[i]);
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_tau32", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_tau32")[i]);
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_msoftdrop", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_msoftdrop")[i]);
@@ -115,31 +111,74 @@ void Process_allHad()
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_M",    tmp.M());
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_eta",   tmp.Eta());
             ana.tx.pushbackToBranch<float>  ("allHad_FatJet_phi",   tmp.Phi());
+            
+            
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet0_pt", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet0_pt")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet0_eta", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet0_eta")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet0_phi", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet0_phi")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet0_mass", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet0_mass")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet0_btag", ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet0_btag")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet1_pt", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet1_pt")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet1_eta", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet1_eta")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet1_phi", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet1_phi")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet1_mass", ana.tx.getBranchLazy<vector<float>>("Common_fatjet_subjet1_mass")[i]);
+            ana.tx.pushbackToBranch<float>  ("allHad_FatJet_subjet1_btag", ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet1_btag")[i]);
+
+            if(ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet0_btag")[i] >= 1) n_loose_subjet++;
+            if(ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet0_btag")[i] >= 2) n_medium_subjet++;
+
+            if(ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet1_btag")[i] >= 1) n_loose_subjet++;
+            if(ana.tx.getBranchLazy<vector<int>>("Common_fatjet_subjet1_btag")[i] >= 2) n_medium_subjet++;
+
         }
     }
+    ST_fj = HT_fj + ana.tx.getBranchLazy<LorentzVector>("Common_met_p4").Pt();
+
+    ana.tx.setBranch<float>  ("allHad_fj_mVVV_reco_nomet",   vvv_reco_fj.M());
+    ana.tx.setBranch<float>  ("allHad_fj_ptVVV_reco_nomet",  vvv_reco_fj.Pt());
+    
+    vvv_reco_fj += ana.tx.getBranchLazy<LorentzVector>("Common_met_p4");
+    
+    ana.tx.setBranch<float>  ("allHad_fj_HT",   HT_fj);
+    ana.tx.setBranch<float>  ("allHad_fj_ST",   ST_fj);
+    ana.tx.setBranch<float>  ("allHad_fj_mVVV_reco",   vvv_reco_fj.M());
+    ana.tx.setBranch<float>  ("allHad_fj_ptVVV_reco",  vvv_reco_fj.Pt());
+
+    
+    
+    
+    
+    ana.tx.setBranch<int>("allHad_FatJet_subjet_btag_loose", n_loose_subjet);
+    ana.tx.setBranch<int>("allHad_FatJet_subjet_btag_medium", n_medium_subjet);
     
     int nb_loose = 0;
     int nb_tight = 0;
     int nb_medium = 0;
     
     for (unsigned int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_jet_idxs").size(); i++){
-        if(ana.tx.getBranchLazy<vector<int>>("Common_jet_overlapfatjet")[i]) continue;
         if (ana.tx.getBranchLazy<vector<int>>("Common_jet_id")[i] != 6) continue;
         
         LorentzVector tmp = ana.tx.getBranchLazy<vector<LorentzVector>>("Common_jet_p4")[i];
         if (abs(tmp.Eta()) > 2.4) continue;
+        
+        //do jet/fatjet overlap removal after b-veto 
+        if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBmedium")[i] ) nb_medium++;
+        if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBtight")[i] ) nb_tight++;
+        if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBloose")[i] ) nb_loose++;
+        
+        if(ana.tx.getBranchLazy<vector<int>>("Common_jet_overlapfatjet")[i]) continue;
          
         ana.tx.pushbackToBranch<float>  ("allHad_Jet_pt",  tmp.Pt());
         ana.tx.pushbackToBranch<float>  ("allHad_Jet_eta", tmp.Eta()); 
         ana.tx.pushbackToBranch<float>  ("allHad_Jet_phi", tmp.Phi());
         ana.tx.pushbackToBranch<float>  ("allHad_Jet_ID", ana.tx.getBranchLazy<vector<int>>("Common_jet_id")[i]);
+        ana.tx.pushbackToBranch<float>  ("allHad_Jet_puid", ana.tx.getBranchLazy<vector<int>>("Common_jet_puid")[i]);
 
         if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBmedium")[i] ) nb_medium++;
         if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBtight")[i] ) nb_tight++;
         if( ana.tx.getBranchLazy<vector<bool>>("Common_jet_passBloose")[i] ) nb_loose++;
 
         selected_p4.push_back(tmp);
-        selected_p4_tight.push_back(tmp);
     }
     
         
@@ -156,37 +195,19 @@ void Process_allHad()
         vvv_reco += tmp;
     }
     ST = HT + ana.tx.getBranchLazy<LorentzVector>("Common_met_p4").Pt();
+    
+    ana.tx.setBranch<float>  ("allHad_mVVV_reco_nomet",   vvv_reco.M());
+    ana.tx.setBranch<float>  ("allHad_ptVVV_reco_nomet",   vvv_reco.Pt());
     vvv_reco += ana.tx.getBranchLazy<LorentzVector>("Common_met_p4");
         
     
     ana.tx.setBranch<float>  ("allHad_HT",   HT);
     ana.tx.setBranch<float>  ("allHad_ST",   ST);
     ana.tx.setBranch<float>  ("allHad_mVVV_reco",   vvv_reco.M());
-    
-    float HT_tight = 0;
-    float ST_tight = 0;
-    LorentzVector vvv_reco_tight; 
-    for(unsigned int i=0; i<selected_p4_tight.size(); i++){
-        HT_tight += selected_p4_tight[i].Pt();
-        LorentzVector tmp = RooUtil::Calc::getLV(selected_p4_tight[i].Pt(), selected_p4_tight[i].Eta(), selected_p4_tight[i].Phi(), selected_p4_tight[i].M());
-        vvv_reco_tight += tmp;
-    }
-    ST_tight = HT_tight + ana.tx.getBranchLazy<LorentzVector>("Common_met_p4").Pt();
-    vvv_reco_tight += ana.tx.getBranchLazy<LorentzVector>("Common_met_p4");
+    ana.tx.setBranch<float>  ("allHad_ptVVV_reco",  vvv_reco.Pt());
+
+
         
-    
-    ana.tx.setBranch<float>  ("allHad_HT_tight",   HT_tight);
-    ana.tx.setBranch<float>  ("allHad_ST_tight",   ST_tight);
-    ana.tx.setBranch<float>  ("allHad_mVVV_reco_tight",   vvv_reco_tight.M());
-
-
-
-
-
-
-
-
-
 
 
     //truth level stuff

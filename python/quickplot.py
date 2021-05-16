@@ -58,7 +58,6 @@ if __name__ == "__main__":
             c.Clear()
             if "TH" not in key.GetClassName(): continue 
             kname = key.GetName()
-            if "mVVV" in kname: continue
             h = f.Get(kname)
              
             ## 2D histogram

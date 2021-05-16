@@ -36,7 +36,8 @@ def main(args):
     username = os.environ['USER']
     #input_dir = "/nfs-7/userdata/{}/tupler_babies/merged/VVV/{}/output/".format(username, args.tag)
     #input_dir = "/nfs-7/userdata/{}/tupler_babies/merged/VVV/{}/output/{}/".format(username, args.tag,yearstring)
-    input_dir = "/hadoop/cms/store/user/lhoryn/VVVAnalysis/040821/2018/merged/"
+    input_dir = "/nfs-7/userdata/lhoryn/tupler_babies/merged/VVV/040821_HT/output/2018/"
+    input_dir = args.inputDir
 
     # Printing input directory name
     print(">>>  Input directory: {}".format(input_dir))
@@ -321,6 +322,7 @@ def main(args):
         p.plot_hist(
                 bgs = [ hists[group].Clone() for group in bkg_plot_order ],
                 sigs = [ hists[group].Clone() for group in sig_plot_order ],
+                #data  = [ hists[group].Clone() for group in sig_plot_order ][0],
                 data = hists["Data"] if args.data else None,
                 colors = colors,
                 legend_labels = legend_labels,
@@ -336,6 +338,9 @@ def main(args):
                     "xaxis_range" : x_range,
                     "remove_underflow":False,
                     "bkg_sort_method":"unsorted",
+                    "ratio_signal":  True,
+                    "xaxis_label" : hist_name,
+                    "remove_underflow" : True,
                     #"signal_scale":args.scale,
                     },
                 )
@@ -416,6 +421,7 @@ if __name__ == "__main__":
     parser.add_argument('-l' , '--yaxis_log', dest='yaxis_log', help='Y-axis set to log' ,  default=False, action='store_true') 
     parser.add_argument('-xn', '--xMin'     , dest='xMin'     , help='X-axis range setting' , type=float,  default=-999., required=False) 
     parser.add_argument('-xx', '--xMax'     , dest='xMax'     , help='X-axis range setting' , type=float,  default=-999., required=False) 
+    parser.add_argument('-i',  '--inDir'     , dest='inputDir'     , help='input director' ,   required=True) 
     # Argument parser
     args = parser.parse_args()
     args.tag

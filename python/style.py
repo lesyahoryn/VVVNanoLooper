@@ -6,9 +6,6 @@
 #~~~~~~~~~~~~~~~~
 
 grouping_allHad = {
-    "QCD_HT100to200.root"             : "QCD",
-    "QCD_HT200to300.root"             : "QCD",
-    "QCD_HT300to500.root"             : "QCD",
     "QCD_HT500to700.root"             : "QCD",
     "QCD_HT700to1000.root"            : "QCD",
     "QCD_HT1000to1500.root"           : "QCD",
@@ -20,12 +17,17 @@ grouping_allHad = {
     "ZJetstoQQ_HT400to600.root"       : "Z+jets",
     "ZJetstoQQ_HT600to800.root"       : "Z+jets",
     "ZJetstoQQ_HT800toInf.root"       : "Z+jets",
-    "TTJets_HT600to800.root"          : "ttbar",
-    "TTJets_HT800to1200.root"         : "ttbar",
-    "TTJets_HT1200to2500.root"        : "ttbar",
-    "TTJets_HT2500toInf.root"         : "ttbar",
+#    "TTJets_HT600to800.root"          : "ttbar",
+#    "TTJets_HT800to1200.root"         : "ttbar",
+#    "TTJets_HT1200to2500.root"        : "ttbar",
+#    "TTJets_HT2500toInf.root"         : "ttbar",
+    "TTSemiLeptonic.root"             : "ttbar",
+    "TTHadronic.root"                 : "ttbar",
     "ST_tW_antitop.root"              : "single top",
     "ST_tW_top.root"                  : "single top",
+    "ST_tchannel_top.root"            : "single top",
+    "ST_tchannel_antitop.root"        : "single top",
+    "ST_schannel.root"                : "single top",
     "WW.root"                         : "diboson",
     "ZZ.root"                         : "diboson",
     "WZ.root"                         : "diboson",
@@ -39,13 +41,17 @@ grouping_allHad = {
 }
 
 bkg_plot_order_allHad = ["diboson", "ttbar", "single top", "Z+jets", "W+jets", "QCD" ]
+bkg_plot_order_allHad = ["diboson", "single top", "Z+jets", "W+jets", "ttbar", "QCD" ]
+bkg_plot_order_allHad = ["diboson", "single top", "Z+jets", "W+jets", "QCD" ,"ttbar"]
+#bkg_plot_order_allHad = ["QCD" ]
 #bkg_plot_order_allHad.reverse() 
 
 legend_labels_allHad = bkg_plot_order_allHad
-sig_plot_order_allHad = [ "WWW SM", "WWW FT0_1", "WWW FT0_5", "WWW FT0_10" ]
-#sig_plot_order_allHad = [ "WWW FT0_5" ]
+sig_plot_order_allHad = ["WWW SM", "WWW FT0_1", "WWW FT0_5", "WWW FT0_10" ]
+#sig_plot_order_allHad = [ "WWW FT0_1" ]
 sig_labels_allHad = sig_plot_order_allHad
 colors_allHad = [8007, 8006, 8005, 8004, 8003, 8001, ]
+colors_allHad = [8007, 8005, 8004, 8003, 8001, 8006,]
 
 #~~~~~~~~~~~~~~~~
 # 4Lep MET styles
