@@ -76,6 +76,8 @@ void Process_Common_NanoAOD()
     bool trig_em = false;
     bool trig_mm = false;
 
+
+
     switch (nt.year())
     {
         case 2016:
@@ -259,6 +261,9 @@ void Process_Common_NanoAOD()
     int nb_medium = 0;
     int nb_tight = 0;
 
+    std::vector<int> matchedJetIdx;
+    std::vector<int> matchedFatJetIdx;
+
     // Loop over jets and do a simple overlap removal against leptons
     for (unsigned int ijet = 0; ijet < nt.Jet_p4().size(); ++ijet)
     {
@@ -313,6 +318,11 @@ void Process_Common_NanoAOD()
             ana.tx.pushbackToBranch<bool>("Common_jet_passBloose" , nt.Jet_btagDeepFlavB()[ijet] > bWPloose );
             ana.tx.pushbackToBranch<bool>("Common_jet_passBmedium", nt.Jet_btagDeepFlavB()[ijet] > bWPmedium);
             ana.tx.pushbackToBranch<bool>("Common_jet_passBtight" , nt.Jet_btagDeepFlavB()[ijet] > bWPtight );
+
+            //save truth jet ID
+            matchedJetIdx.push_back(nt.Jet_genJetIdx()[ijet]);
+            ana.tx.pushbackToBranch<int>("Common_jet_genJetIdx", nt.Jet_genJetIdx()[ijet] );
+        
         }
 
         // b-tagged jet counter
@@ -436,7 +446,12 @@ void Process_Common_NanoAOD()
         ana.tx.pushbackToBranch<float>("Common_fatjet_subjet1_mass", nt.FatJet_subJetIdx2()[ifatjet] >= 0 ? nt.SubJet_mass()[nt.FatJet_subJetIdx2()[ifatjet]] : -999.f);
         ana.tx.pushbackToBranch<LorentzVector>("Common_fatjet_subjet0_p4",  nt.FatJet_subJetIdx1()[ifatjet] >= 0 ? (RooUtil::Calc::getLV(nt.SubJet_pt()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_eta()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_phi()[nt.FatJet_subJetIdx1()[ifatjet]], nt.SubJet_mass()[nt.FatJet_subJetIdx1()[ifatjet]])) : (RooUtil::Calc::getLV(0., 0., 0., 0.)));
         ana.tx.pushbackToBranch<LorentzVector>("Common_fatjet_subjet1_p4",  nt.FatJet_subJetIdx2()[ifatjet] >= 0 ? (RooUtil::Calc::getLV(nt.SubJet_pt()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_eta()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_phi()[nt.FatJet_subJetIdx2()[ifatjet]], nt.SubJet_mass()[nt.FatJet_subJetIdx2()[ifatjet]])) : (RooUtil::Calc::getLV(0., 0., 0., 0.)));
-        
+    
+        //save truth jet ID
+        matchedFatJetIdx.push_back(nt.FatJet_genJetAK8Idx()[ifatjet]);
+        ana.tx.pushbackToBranch<int>("Common_jet_genJetIdx", nt.Jet_genJetIdx()[ifatjet] );
+
+
         int btag = -999;
         if (nt.FatJet_subJetIdx1()[ifatjet] >= 0){
             if (nt.SubJet_btagDeepB()[ nt.FatJet_subJetIdx1()[ifatjet] ] > csvBLoose) btag = 1;
@@ -872,6 +887,44 @@ void Process_Common_NanoAOD()
             else if (V_abspdgid == 24 and HXX_abspdgid == 23) ana.tx.setBranch<int>("Common_gen_VH_channel", 2);
             else if (V_abspdgid == 23 and HXX_abspdgid == 23) ana.tx.setBranch<int>("Common_gen_VH_channel", 3);
             else                                              ana.tx.setBranch<int>("Common_gen_VH_channel", -HXX_abspdgid);
+        }
+
+        //Save gen jets matched to reco jets
+        for(unsigned int ijet=0; ijet < nt.nGenJet(); ijet++){
+            LorentzVector jet = RooUtil::Calc::getLV(nt.GenJet_pt()[ijet], nt.GenJet_eta()[ijet], nt.GenJet_phi()[ijet], nt.GenJet_mass()[ijet]);
+            ana.tx.pushbackToBranch<LorentzVector>("Common_genJet_p4", jet);
+            
+            if ( std::find(matchedJetIdx.begin(), matchedJetIdx.end(), ijet) != matchedJetIdx.end() ){
+                ana.tx.pushbackToBranch<bool>("Common_genJet_matchedToReco", 1);
+            }
+
+            //dR match to quark
+            int matchid = -1;
+            for (unsigned int igen = 0; igen < ana.tx.getBranchLazy<vector<LorentzVector>>("Common_gen_vvvdecay_p4s").size(); ++igen){
+                if (RooUtil::Calc::DeltaR(jet, ana.tx.getBranchLazy<vector<LorentzVector>>("Common_gen_vvvdecay_p4s")[igen]) < 0.4)
+                    matchid = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_idx")[igen];
+                   
+            }
+             ana.tx.pushbackToBranch<int>("Common_genJet_vvvidx", matchid);
+
+        }
+
+        for(unsigned int ijet=0; ijet < nt.nGenJetAK8(); ijet++){
+            LorentzVector jet = RooUtil::Calc::getLV(nt.GenJetAK8_pt()[ijet], nt.GenJetAK8_eta()[ijet], nt.GenJetAK8_phi()[ijet], nt.GenJetAK8_mass()[ijet]);
+            ana.tx.pushbackToBranch<LorentzVector>("Common_genFatJet_p4", jet);
+            
+            if ( std::find(matchedFatJetIdx.begin(), matchedFatJetIdx.end(), ijet) != matchedFatJetIdx.end() ){
+                ana.tx.pushbackToBranch<bool>("Common_genFatJet_matchedToReco", 1);
+            }
+
+            //dR match to quark
+            int matchid = -1;
+            for (unsigned int igen = 0; igen < ana.tx.getBranchLazy<vector<LorentzVector>>("Common_gen_vvvdecay_p4s").size(); ++igen){
+                if (RooUtil::Calc::DeltaR(jet, ana.tx.getBranchLazy<vector<LorentzVector>>("Common_gen_vvvdecay_p4s")[igen]) < 0.4)
+                    matchid = ana.tx.getBranchLazy<vector<int>>("Common_gen_vvvdecay_idx")[igen];
+                   
+            }
+             ana.tx.pushbackToBranch<int>("Common_genFatJet_vvvidx", matchid);            
         }
     }
 

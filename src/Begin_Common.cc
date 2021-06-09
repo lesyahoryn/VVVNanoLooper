@@ -108,6 +108,7 @@ void Begin_Common_Create_Branches()
     //ana.tx.createBranch<vector<float>>        ("Common_jet_bSFupMedium");   // single jet bSF
     //ana.tx.createBranch<vector<float>>        ("Common_jet_bSFupTight");    // single jet bSF
     ana.tx.createBranch<vector<int>>          ("Common_jet_overlapfatjet"); // Pt sorted selected jet idxs (To access rest of the jet variables in NanoAOD)
+    ana.tx.createBranch<vector<int>>          ("Common_jet_genJetIdx");
 
     // Fat jet variables
     ana.tx.createBranch<vector<LorentzVector>>("Common_fatjet_p4");            // Pt sorted selected fatjet p4s
@@ -164,6 +165,7 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<float>        ("Common_eventweight_fatjet_SFupLoose");     // event fatjet SF
     ana.tx.createBranch<float>        ("Common_eventweight_fatjet_SFupMedium");    // event fatjet SF
     ana.tx.createBranch<float>        ("Common_eventweight_fatjet_SFupTight");     // event fatjet SF
+    ana.tx.createBranch<vector<int>>   ("Common_fatjet_genJetIdx");
 
     // The n-loose b-tagged jets
     ana.tx.createBranch<int>                  ("Common_nb_loose");    // DeepFlav-B loose nb
@@ -183,6 +185,14 @@ void Begin_Common_Create_Branches()
     ana.tx.createBranch<vector<int>>          ("Common_gen_vvvdecay_pdgid");        // Selected gen-particle of vvv decays pdgids
     ana.tx.createBranch<vector<LorentzVector>>("Common_gen_vvvdecay_p4s");          // Selected gen-particle of vvv decays p4s
     ana.tx.createBranch<vector<int>>          ("Common_gen_vvvdecay_taudecayid");   // If gentau - flag the decay of the gentau
+
+    ana.tx.createBranch<vector<LorentzVector>>  ("Common_genJet_p4"); 
+    ana.tx.createBranch<vector<bool>>           ("Common_genJet_matchedToReco");
+    ana.tx.createBranch<vector<int>>            ("Common_genJet_vvvidx");
+
+    ana.tx.createBranch<vector<LorentzVector>>  ("Common_genFatJet_p4"); 
+    ana.tx.createBranch<vector<bool>>           ("Common_genFatJet_matchedToReco");
+    ana.tx.createBranch<vector<int>>            ("Common_genFatJet_vvvidx");
 
     ana.tx.createBranch<bool>                 ("Common_isSignal");
     ana.tx.createBranch<int>                  ("Common_n_W");
