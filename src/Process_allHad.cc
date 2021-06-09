@@ -74,6 +74,7 @@ void Process_allHad()
     
     int n_loose_subjet = 0;
     int n_medium_subjet = 0;
+    
 
     bool first_jet = true;
     for (unsigned int i=0; i < ana.tx.getBranchLazy<vector<int>>("Common_fatjet_idxs").size(); i++){
@@ -83,13 +84,14 @@ void Process_allHad()
         if (ana.tx.getBranchLazy<vector<int>>("Common_fatjet_id")[i] != 6) continue;
         
              
-         
-        //only select medium fatjets 
-        if(fjid >= 2) {
+        //only select tight fatjets 
+        if(fjid >= 3) {
             //fatjet pt 0 > 500 GeV for trigger turn on
-            if(first_jet){
-                 first_jet = false;
-                 if(tmp.Pt() < 500) continue;
+            if( first_jet){
+                if (tmp.Pt() > 500)
+                   first_jet = false;
+                else
+                  continue;
             }
             selected_p4.push_back(tmp);
             HT_fj += tmp.Pt();
